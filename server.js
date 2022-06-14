@@ -10,6 +10,9 @@ const app = express();
 app.use(express.urlencoded({ extended: true}));
 // parse incoming JSON data
 app.use(express.json());
+// link front end files needed to the front end pages requesting them
+app.use(express.static('public'));
+
 const { animals } = require('./data/animals.json');
 
 
@@ -49,7 +52,7 @@ function filterByQuery(query, animalsArray) {
         filteredResults = filteredResults.filter(animal => animal.name === query.name);
     }
     return filteredResults;
-}
+};
 
 function validateAnimal(animal) {
     if (!animal.name || typeof animal.name !== 'string') {
@@ -65,12 +68,12 @@ function validateAnimal(animal) {
         return false;
     }
     return true;
-}
+};
 
 function findById(id, animalsArray) {
     const result = animalsArray.filter(animal => animal.id === id)[0];
     return result;
-}
+};
 
 function createNewAnimal (body, animalsArray) {
     const animal = body;
@@ -82,7 +85,7 @@ function createNewAnimal (body, animalsArray) {
 
     // return finished code to post route for response
     return animal;
-}
+};
 
 app.get('/api/animals', (req, res) => {
     let results = animals;
@@ -99,6 +102,22 @@ app.get('/api/animals/:id', (req, res) => {
     } else {
         res.sendStatus(404);
     }
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
 app.post('/api/animals', (req, res) => {
